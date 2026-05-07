@@ -129,3 +129,19 @@ print (f"\ nProbabilites par classe :")
 for classe , proba in zip ( model_loaded . classes_ , probas ):
 bar = '#' * int ( proba * 30)
 print (f" { classe :8s} : { proba :.1%} { bar }")
+importances = model.feature_importances_
+for name, imp in sorted(zip(feature_cols, importances),
+                        key=lambda x: x[1], reverse=True):
+    print(f"{name:20s} : {imp:.3f}")
+patients = [
+    {"age": 10, "sexe": "M", "temperature": 36.5, "tension_sys": 90, "toux": 0, "fatigue": 0, "maux_tete": 0, "region": "Dakar"},
+    {"age": 35, "sexe": "F", "temperature": 41.0, "tension_sys": 130, "toux": 1, "fatigue": 1, "maux_tete": 1, "region": "Thies"},
+    {"age": 70, "sexe": "M", "temperature": 38.5, "tension_sys": 150, "toux": 1, "fatigue": 1, "maux_tete": 0, "region": "Dakar"},
+]
+for p in patients:
+    s = le_sexe_loaded.transform([p["sexe"]])[0]
+    r = le_region_loaded.transform([p["region"]])[0]
+    f = [p["age"], s, p["temperature"], p["tension_sys"], p["toux"], p["fatigue"], p["maux_tete"], r]
+    d = model_loaded.predict([f])[0]
+    prob = model_loaded.predict_proba([f])[0].max()
+    print(f"Patient {p['age']} ans {p['sexe']} -> {d} ({prob:.1%})")
